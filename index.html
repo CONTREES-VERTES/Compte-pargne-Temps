@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compte Épargne Temps — Office de Tourisme des Contrées Vertes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:          #f4f1ec;
+  --surface:     #ffffff;
+  --accent:      #2b5240;
+  --accent2:     #3d7a5c;
+  --accent-pale: #e6efe9;
+  --gold:        #b5832a;
+  --gold-pale:   #fdf3e3;
+  --text:        #1c1c1c;
+  --muted:       #6e6e6e;
+  --border:      #ddd8cf;
+  --danger:      #c0392b;
+  --shadow:      0 6px 32px rgba(43,82,64,.10);
+  --radius:      14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Jost',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── HEADER ── */
+.app-header{
+  background:var(--accent);
+  padding:16px 32px;
+  display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:100;
+}
+.app-header .monogram{
+  width:42px;height:42px;border-radius:10px;
+  background:rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:22px;
+  color:#fff;font-weight:700;flex-shrink:0;
+}
+.app-header .title-block h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;color:#fff;font-weight:700;line-height:1.2;
+}
+.app-header .title-block p{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:1px;}
+.app-header .spacer{flex:1;}
+.app-header .header-btn{
+  background:rgba(255,255,255,.12);border:none;
+  color:rgba(255,255,255,.8);font-family:'Jost',sans-serif;
+  font-size:12px;padding:7px 14px;border-radius:8px;
+  cursor:pointer;transition:.15s;
+}
+.app-header .header-btn:hover{background:rgba(255,255,255,.22);}
+
+/* ── LAYOUT ── */
+.page{display:none;max-width:820px;margin:0 auto;padding:40px 20px 80px;}
+.page.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 40px;margin-bottom:20px;}
+@media(max-width:540px){.card{padding:24px 20px;}}
+
+/* ── TYPOGRAPHY ── */
+.section-h{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:6px;}
+.section-sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
+.block-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.pill{background:var(--accent-pale);color:var(--accent);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.04em;}
+.pill-gold{background:var(--gold-pale);color:var(--gold);}
+
+/* ── ACCUEIL — grille agents ── */
+#page-accueil .card{text-align:center;padding:48px 40px 36px;}
+.accueil-icon{font-size:42px;margin-bottom:16px;}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:28px;}
+.agent-btn{
+  background:var(--bg);border:2px solid var(--border);
+  border-radius:12px;padding:18px 16px;cursor:pointer;
+  text-align:center;transition:all .18s ease;
+}
+.agent-btn:hover{border-color:var(--accent);background:var(--accent-pale);transform:translateY(-2px);box-shadow:0 4px 16px rgba(43,82,64,.12);}
+.agent-btn .av{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-size:17px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 10px;
+}
+.agent-btn .av-gold{background:var(--gold);}
+.agent-btn .bn{font-weight:600;font-size:14px;}
+.agent-btn .bp{font-size:12px;color:var(--muted);margin-top:2px;}
+
+/* ── PASSWORD SCREEN ── */
+#page-password .card{max-width:440px;margin:0 auto;}
+.pw-avatar{width:64px;height:64px;border-radius:50%;background:var(--accent);color:#fff;font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+
+/* ── FORM ELEMENTS ── */
+.form-group{margin-bottom:18px;}
+label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+input[type=text],input[type=password],input[type=date],input[type=number],input[type=email],select,textarea{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:9px;
+  font-family:'Jost',sans-serif;font-size:14px;color:var(--text);
+  background:#fff;transition:.15s;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(43,82,64,.08);}
+textarea{resize:vertical;min-height:80px;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 22px;border-radius:9px;
+  font-family:'Jost',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;border:none;transition:all .15s;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover{background:#9a6e22;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{opacity:.88;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.btn-block{width:100%;justify-content:center;}
+
+/* ── SOLDE HERO ── */
+.solde-hero{
+  background:var(--accent);border-radius:var(--radius);
+  padding:28px 32px;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;position:relative;overflow:hidden;
+  flex-wrap:wrap;gap:16px;
+}
+.solde-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05);}
+.solde-hero::after{content:'';position:absolute;bottom:-70px;right:80px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.sh-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-bottom:6px;}
+.sh-number{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:700;line-height:1;}
+.sh-unit{font-size:15px;opacity:.65;margin-top:5px;}
+.sh-meta{font-size:13px;opacity:.7;line-height:1.9;text-align:right;}
+
+/* ── INFO CARDS ── */
+.info-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
+@media(max-width:560px){.info-row{grid-template-columns:1fr 1fr;}}
+.ic{background:var(--surface);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);border-left:3px solid var(--accent2);}
+.ic.gold{border-left-color:var(--gold);}
+.ic .icl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px;}
+.ic .icv{font-size:22px;font-weight:600;color:var(--accent);}
+.ic.gold .icv{color:var(--gold);}
+.ic .ics{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.data-table thead tr{background:var(--accent-pale);}
+.data-table th{padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);font-weight:600;}
+.data-table td{padding:11px 14px;border-top:1px solid var(--border);}
+.data-table tr:hover td{background:#faf8f5;}
+.data-table .tr-total td{font-weight:700;background:var(--accent-pale)!important;color:var(--accent);}
+.num{text-align:right;font-weight:600;}
+.tbl-wrap{background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-rtt{background:#dbeafe;color:#1d4ed8;}
+.b-cp5{background:#dcfce7;color:#166534;}
+.b-art38{background:#fee2e2;color:#991b1b;}
+.b-frac{background:#ede9fe;color:#5b21b6;}
+.b-cadre{background:#e0f2fe;color:#0369a1;}
+.b-emp{background:#fef3c7;color:#92400e;}
+.b-sortie{background:#fce7f3;color:#9d174d;}
+.b-autre{background:#f3f4f6;color:#374151;}
+.date-mono{font-family:monospace;background:var(--bg);border-radius:4px;padding:2px 6px;font-size:12px;}
+
+/* ── STATUS ── */
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.s-pending{background:#fef9c3;color:#854d0e;}
+.s-ok{background:#dcfce7;color:#166534;}
+.s-ko{background:#fee2e2;color:#991b1b;}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:9px;font-size:13px;margin-bottom:16px;}
+.alert-success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;}
+.alert-error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+.alert-info{background:var(--accent-pale);color:var(--accent);border:1px solid #c1dbc9;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;}
+.nav-tab{padding:9px 18px;border-radius:9px;border:1.5px solid var(--border);background:none;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--muted);transition:.15s;}
+.nav-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.nav-tab:hover:not(.active){border-color:var(--accent);color:var(--accent);}
+
+/* ── ADMIN ── */
+.admin-agent-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.admin-agent-row:last-child{border-bottom:none;}
+.admin-agent-row .av-sm{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.admin-agent-row .ainfo{flex:1;}
+.admin-agent-row .ainfo strong{font-size:14px;}
+.admin-agent-row .ainfo small{display:block;font-size:11px;color:var(--muted);}
+
+/* ── FORM SECTIONS ── */
+.form-section{background:var(--bg);border-radius:10px;padding:20px;margin-bottom:16px;}
+.form-section-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:500px){.form-grid-2{grid-template-columns:1fr;}}
+
+/* ── MODAL ── */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--surface);border-radius:16px;padding:32px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal h3{font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:16px;}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
+
+/* ── FOOTER ── */
+.page-footer{margin-top:32px;padding:14px 18px;background:var(--surface);border-radius:10px;border-left:3px solid var(--gold);font-size:12px;color:var(--muted);line-height:1.7;}
+.page-footer strong{color:var(--text);}
+
+/* ── ANIMATIONS ── */
+.page.active{animation:fadeIn .22s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ HEADER ════════════════════ -->
+<div class="app-header">
+  <div class="monogram" style="font-size:13px;font-weight:700;letter-spacing:.02em;">CET</div>
+  <div class="title-block">
+    <h1>Compte Épargne Temps</h1>
+    <p>Office de Tourisme des Contrées Vertes</p>
+  </div>
+  <div class="spacer"></div>
+  <button class="header-btn" id="btn-logout" style="display:none" onclick="logout()">← Déconnexion</button>
+  <button class="header-btn" id="btn-admin-access" onclick="goAdminLogin()" style="display:none">⚙ Administration</button>
+</div>
+
+<!-- ════════════════════ PAGE ACCUEIL ════════════════════ -->
+<div class="page active" id="page-accueil">
+  <div class="card" style="text-align:center;padding:48px 40px 36px;">
+    <div class="accueil-icon">🌿</div>
+    <h2 class="section-h">Mon Compte Épargne Temps</h2>
+    <p class="section-sub" style="margin-bottom:0;">Sélectionnez votre nom pour accéder à votre espace personnel.</p>
+    <div class="agent-grid" id="agent-grid"></div>
+  </div>
+  <div style="text-align:center;margin-top:10px;">
+    <button class="btn btn-ghost btn-sm" onclick="goAdminLogin()">⚙ Accès Direction</button>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE MOT DE PASSE ════════════════════ -->
+<div class="page" id="page-password">
+  <div class="card" style="max-width:420px;margin:0 auto;text-align:center;">
+    <div class="pw-avatar" id="pw-avatar">?</div>
+    <h2 class="section-h" id="pw-name" style="margin-bottom:6px;">—</h2>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;">Entrez votre mot de passe pour accéder à votre fiche.</p>
+    <div class="form-group" style="text-align:left;">
+      <label>Mot de passe</label>
+      <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
+    </div>
+    <div id="pw-error" class="alert alert-error" style="display:none;">Mot de passe incorrect.</div>
+    <button class="btn btn-primary btn-block" onclick="checkPassword()">Accéder à ma fiche →</button>
+    <hr class="divider">
+    <button class="btn btn-ghost btn-sm" onclick="showPage('page-accueil')">← Retour</button>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE AGENT ════════════════════ -->
+<div class="page" id="page-agent">
+
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 class="section-h" id="agent-name">—</h2>
+      <p style="color:var(--muted);font-size:14px;">Mon espace CET personnel</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="showPage('page-accueil');currentAgent=null;">← Retour</button>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showAgentTab('tab-solde',this)">Mon solde</button>
+    <button class="nav-tab" onclick="showAgentTab('tab-alimentation',this)">Demande alimentation</button>
+    <button class="nav-tab" onclick="showAgentTab('tab-utilisation',this)">Demande utilisation</button>
+    <button class="nav-tab" onclick="showAgentTab('tab-historique',this)">Mes demandes</button>
+  </div>
+
+  <!-- TAB SOLDE -->
+  <div id="tab-solde">
+    <div class="solde-hero">
+      <div>
+        <div class="sh-label">Solde disponible</div>
+        <div class="sh-number" id="agent-solde">—</div>
+        <div class="sh-unit">jours épargnés</div>
+      </div>
+      <div class="sh-meta" id="agent-meta">—</div>
+    </div>
+
+    <div class="info-row" id="agent-cards"></div>
+
+    <div class="block-title">Détail des entrées <span class="pill">CRÉDITS</span></div>
+    <div class="tbl-wrap" id="agent-table-container"></div>
+
+    <div class="page-footer" id="agent-footer"></div>
+  </div>
+
+  <!-- TAB ALIMENTATION -->
+  <div id="tab-alimentation" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Demande annuelle d'alimentation du CET <span class="pill">FORMULAIRE</span></h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">À transmettre au service administratif au plus tard le 31 décembre de l'année N.</p>
+
+      <div id="form-alim-success" class="alert alert-success" style="display:none;">✓ Votre demande a bien été envoyée. La direction en a été notifiée par email.</div>
+      <div id="form-alim-error" class="alert alert-error" style="display:none;">Une erreur est survenue. Veuillez réessayer.</div>
+
+      <form id="form-alimentation" onsubmit="submitAlimentation(event)">
+        <input type="hidden" name="_subject" value="CET - Nouvelle demande d'alimentation">
+        <input type="hidden" name="type_demande" value="Alimentation CET">
+        <input type="hidden" name="agent" id="alim-agent-hidden">
+
+        <div class="form-section">
+          <div class="form-section-title">Informations</div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Salarié(e)</label>
+              <input type="text" id="alim-nom" name="salarie" readonly style="background:var(--bg);">
+            </div>
+            <div class="form-group">
+              <label>Au titre de l'année</label>
+              <input type="number" name="annee" value="2025" min="2020" max="2035" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Jours à verser sur le CET</div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>5ème semaine de congés payés (jours)</label>
+              <input type="number" name="jours_cp5" min="0" max="31" step="0.5" value="0">
+            </div>
+            <div class="form-group">
+              <label>RTT acquis — limité à 50% (jours)</label>
+              <input type="number" name="jours_rtt" min="0" max="31" step="0.5" value="0">
+            </div>
+            <div class="form-group">
+              <label>Repos forfait annuel jours (jours)</label>
+              <input type="number" name="jours_forfait" min="0" max="31" step="0.5" value="0">
+            </div>
+            <div class="form-group">
+              <label>Repos compensateur heures supp. (jours)</label>
+              <input type="number" name="jours_repos_comp" min="0" max="31" step="0.5" value="0">
+            </div>
+            <div class="form-group">
+              <label>Majoration jours fériés / dimanche / nuit (jours)</label>
+              <input type="number" name="jours_majoration" min="0" max="31" step="0.5" value="0">
+            </div>
+            <div class="form-group">
+              <label>Heures dépassant convention forfait heures (jours)</label>
+              <input type="number" name="jours_forfait_h" min="0" max="31" step="0.5" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Commentaire (facultatif)</div>
+          <textarea name="commentaire" placeholder="Précisions éventuelles…"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Envoyer la demande →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB UTILISATION -->
+  <div id="tab-utilisation" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Demande d'utilisation sous forme de congés <span class="pill">FORMULAIRE</span></h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Demande de consommation de jours épargnés sur votre CET.</p>
+
+      <div id="form-util-success" class="alert alert-success" style="display:none;">✓ Votre demande a bien été envoyée. La direction en a été notifiée par email.</div>
+      <div id="form-util-error" class="alert alert-error" style="display:none;">Une erreur est survenue. Veuillez réessayer.</div>
+
+      <form id="form-utilisation" onsubmit="submitUtilisation(event)">
+        <input type="hidden" name="_subject" value="CET - Nouvelle demande d'utilisation">
+        <input type="hidden" name="type_demande" value="Utilisation CET (congés)">
+        <input type="hidden" name="agent" id="util-agent-hidden">
+
+        <div class="form-section">
+          <div class="form-section-title">Informations</div>
+          <div class="form-group">
+            <label>Salarié(e)</label>
+            <input type="text" id="util-nom" name="salarie" readonly style="background:var(--bg);">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Période de congé souhaitée</div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Du</label>
+              <input type="date" name="date_debut" required>
+            </div>
+            <div class="form-group">
+              <label>Au</label>
+              <input type="date" name="date_fin" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nombre de jours demandés</label>
+            <input type="number" name="nb_jours" min="0.5" step="0.5" required placeholder="ex: 3">
+          </div>
+          <div class="form-group">
+            <label>Nature du congé</label>
+            <input type="text" name="nature_conge" placeholder="ex: congé pour convenances personnelles" required>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Commentaire (facultatif)</div>
+          <textarea name="commentaire" placeholder="Précisions éventuelles…"></textarea>
+        </div>
+
+        <div class="alert alert-info" style="margin-bottom:16px;">
+          ℹ Votre solde actuel : <strong id="util-solde-info">— jours</strong>. Toute demande supérieure à votre solde sera automatiquement refusée.
+        </div>
+
+        <button type="submit" class="btn btn-primary">Envoyer la demande →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB HISTORIQUE -->
+  <div id="tab-historique" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Mes demandes envoyées</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Historique des demandes soumises depuis cette application.</p>
+      <div id="historique-container"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════ PAGE ADMIN LOGIN ════════════════════ -->
+<div class="page" id="page-admin-login">
+  <div class="card" style="max-width:400px;margin:0 auto;text-align:center;">
+    <div style="font-size:36px;margin-bottom:16px;">🔐</div>
+    <h2 class="section-h" style="margin-bottom:6px;">Accès Direction</h2>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;">Espace réservé à la direction et aux RH.</p>
+    <div class="form-group" style="text-align:left;">
+      <label>Mot de passe direction</label>
+      <input type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
+    </div>
+    <div id="admin-pw-error" class="alert alert-error" style="display:none;">Mot de passe incorrect.</div>
+    <button class="btn btn-primary btn-block" onclick="checkAdminPassword()">Accéder →</button>
+    <hr class="divider">
+    <button class="btn btn-ghost btn-sm" onclick="showPage('page-accueil')">← Retour</button>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE ADMIN ════════════════════ -->
+<div class="page" id="page-admin">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 class="section-h">Administration</h2>
+      <p style="color:var(--muted);font-size:14px;">Gestion des agents et des soldes CET</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="logoutAdmin()">← Déconnexion</button>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showAdminTab('tab-admin-agents',this)">Agents & Soldes</button>
+    <button class="nav-tab" onclick="showAdminTab('tab-admin-add',this)">Nouvel agent</button>
+    <button class="nav-tab" onclick="showAdminTab('tab-admin-entry',this)">Ajouter une entrée</button>
+    <button class="nav-tab" onclick="showAdminTab('tab-admin-export',this)">Export données</button>
+  </div>
+
+  <!-- ADMIN: liste agents -->
+  <div id="tab-admin-agents">
+    <div class="card">
+      <h3 class="block-title">Agents enregistrés</h3>
+      <div id="admin-agents-list"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN: nouvel agent -->
+  <div id="tab-admin-add" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Ajouter un nouvel agent</h3>
+      <div id="add-agent-success" class="alert alert-success" style="display:none;">✓ Agent ajouté avec succès.</div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" id="new-prenom" placeholder="ex: Marie">
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="new-nom" placeholder="ex: DUPONT">
+        </div>
+        <div class="form-group">
+          <label>Date d'ouverture CET</label>
+          <input type="text" id="new-ouverture" placeholder="ex: 31/12/2025">
+        </div>
+        <div class="form-group">
+          <label>Mot de passe initial</label>
+          <input type="text" id="new-password" placeholder="ex: prenom2025">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addAgent()">Ajouter l'agent →</button>
+    </div>
+  </div>
+
+  <!-- ADMIN: ajouter entrée -->
+  <div id="tab-admin-entry" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Ajouter une entrée / sortie</h3>
+      <div id="entry-success" class="alert alert-success" style="display:none;">✓ Entrée enregistrée.</div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Agent</label>
+          <select id="entry-agent"></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" id="entry-date" placeholder="ex: 31/12/2025">
+        </div>
+        <div class="form-group">
+          <label>Type de mouvement</label>
+          <select id="entry-sens">
+            <option value="entree">Entrée (crédit)</option>
+            <option value="sortie">Sortie (débit)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Type de jour</label>
+          <select id="entry-type">
+            <option>RTT</option>
+            <option>5ème semaine CP</option>
+            <option>Congés pour ancienneté</option>
+            <option>Jours de fractionnement</option>
+            <option>Repos article 38</option>
+            <option>Congés cadre</option>
+            <option>Abondement employeur</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nombre de jours</label>
+          <input type="number" id="entry-jours" min="0.5" step="0.5" placeholder="ex: 5">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addEntry()">Enregistrer →</button>
+    </div>
+  </div>
+
+  <!-- ADMIN: export -->
+  <div id="tab-admin-export" style="display:none;">
+    <div class="card">
+      <h3 class="block-title">Export des données</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Exportez toutes les données pour sauvegarde ou mise à jour annuelle.</p>
+      <button class="btn btn-primary" onclick="exportData()">⬇ Exporter en JSON</button>
+      <hr class="divider">
+      <h3 class="block-title" style="margin-top:8px;">Importer des données</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Importez un fichier JSON précédemment exporté pour restaurer ou mettre à jour les données.</p>
+      <input type="file" id="import-file" accept=".json" style="margin-bottom:12px;">
+      <br>
+      <button class="btn btn-gold" onclick="importData()">⬆ Importer le fichier JSON</button>
+      <div id="import-result" class="alert" style="display:none;margin-top:12px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════ MODAL EDIT AGENT ════════════════════ -->
+<div class="modal-backdrop" id="modal-edit">
+  <div class="modal">
+    <h3>Modifier l'agent</h3>
+    <input type="hidden" id="edit-agent-id">
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Prénom</label>
+        <input type="text" id="edit-prenom">
+      </div>
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" id="edit-nom">
+      </div>
+      <div class="form-group">
+        <label>Ouverture CET</label>
+        <input type="text" id="edit-ouverture">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="text" id="edit-password">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="saveEditAgent()">Enregistrer</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit')">Annuler</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteAgent()" style="margin-left:auto;">Supprimer l'agent</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIGURATION
+// ═══════════════════════════════════════════════════
+
+const FORMSPREE_URL = "https://formspree.io/f/xreoldgl";
+const ADMIN_PASSWORD = "DirectionCET2025";
+
+// ═══════════════════════════════════════════════════
+//  DONNÉES INITIALES
+// ═══════════════════════════════════════════════════
+
+const DEFAULT_DATA = {
+  agents: [
+    {
+      id:"BRETTE", prenom:"Ghislaine", nom:"BRETTE",
+      ouverture:"31/12/2022", password:"brette2025",
+      entrees:[
+        {date:"31/12/2022",type:"5ème semaine CP",jours:5,sens:"entree"},
+        {date:"16/12/2024",type:"Repos article 38",jours:5,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"LACHAUD", prenom:"Céline", nom:"LACHAUD",
+      ouverture:"31/12/2022", password:"lachaud2025",
+      entrees:[
+        {date:"30/11/2024",type:"Repos article 38",jours:4.29,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"LESPINAS", prenom:"Fabien", nom:"LESPINAS",
+      ouverture:"31/12/2022", password:"lespinas2025",
+      entrees:[
+        {date:"31/12/2022",type:"Repos article 38",jours:7.14,sens:"entree"},
+        {date:"31/12/2023",type:"5ème semaine CP",jours:5,sens:"entree"},
+        {date:"31/12/2023",type:"Repos article 38",jours:6,sens:"entree"},
+        {date:"31/12/2023",type:"Abondement employeur",jours:1,sens:"entree"},
+        {date:"28/11/2024",type:"Repos article 38",jours:7,sens:"entree"},
+        {date:"28/11/2024",type:"Abondement employeur",jours:1,sens:"entree"},
+        {date:"12/04/2025",type:"Repos article 38",jours:11,sens:"entree"},
+        {date:"12/04/2025",type:"Abondement employeur",jours:1,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"LEYMOND", prenom:"Basile", nom:"LEYMOND",
+      ouverture:"31/12/2022", password:"leymond2025",
+      entrees:[
+        {date:"15/12/2025",type:"Congés cadre",jours:16,sens:"entree"},
+        {date:"15/12/2025",type:"Abondement employeur",jours:1,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"NEYRET-GIGOT", prenom:"Léa", nom:"NEYRET-GIGOT",
+      ouverture:"31/12/2022", password:"neyret2025",
+      entrees:[
+        {date:"30/11/2024",type:"5ème semaine CP",jours:4,sens:"entree"},
+        {date:"30/11/2024",type:"Repos article 38",jours:3,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"PLAS", prenom:"Sandrine", nom:"PLAS",
+      ouverture:"31/12/2022", password:"plas2025",
+      entrees:[
+        {date:"30/11/2024",type:"RTT",jours:10,sens:"entree"},
+        {date:"12/03/2025",type:"Jours de fractionnement",jours:0.5,sens:"entree"},
+        {date:"12/03/2025",type:"Repos article 38",jours:0.5,sens:"entree"},
+        {date:"12/03/2025",type:"Abondement employeur",jours:1,sens:"entree"}
+      ],
+      sorties:[]
+    },
+    {
+      id:"SLIMANI", prenom:"Cléa", nom:"SLIMANI",
+      ouverture:"31/12/2022", password:"slimani2025",
+      entrees:[],
+      sorties:[]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+
+let DATA = loadData();
+let currentAgent = null;
+let adminMode = false;
+
+function loadData() {
+  try {
+    const stored = localStorage.getItem('cet_data');
+    if (stored) return JSON.parse(stored);
+  } catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveData() {
+  localStorage.setItem('cet_data', JSON.stringify(DATA));
+}
+
+function getAgent(id) {
+  return DATA.agents.find(a => a.id === id);
+}
+
+function getSolde(agent) {
+  const e = agent.entrees.reduce((s,x)=>s+x.jours,0);
+  const s = (agent.sorties||[]).reduce((s,x)=>s+x.jours,0);
+  return Math.round((e-s)*100)/100;
+}
+
+// ═══════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showAgentTab(id, btn) {
+  ['tab-solde','tab-alimentation','tab-utilisation','tab-historique'].forEach(t=>{
+    document.getElementById(t).style.display = t===id ? 'block' : 'none';
+  });
+  document.querySelectorAll('#page-agent .nav-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='tab-historique') renderHistorique();
+}
+
+function showAdminTab(id, btn) {
+  ['tab-admin-agents','tab-admin-add','tab-admin-entry','tab-admin-export'].forEach(t=>{
+    document.getElementById(t).style.display = t===id ? 'block' : 'none';
+  });
+  document.querySelectorAll('#page-admin .nav-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='tab-admin-agents') renderAdminAgents();
+  if(id==='tab-admin-entry') populateEntrySelect();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══════════════════════════════════════════════════
+//  ACCUEIL
+// ═══════════════════════════════════════════════════
+
+function renderAccueil() {
+  const grid = document.getElementById('agent-grid');
+  grid.innerHTML = '';
+  DATA.agents.forEach(a => {
+    const initials = (a.prenom[0]+(a.nom[0]||'')).toUpperCase();
+    const btn = document.createElement('button');
+    btn.className = 'agent-btn';
+    btn.innerHTML = `<div class="av">${initials}</div>
+      <div class="bn">${a.prenom}</div>
+      <div class="bp">${a.nom}</div>`;
+    btn.onclick = () => goPassword(a.id);
+    grid.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  AUTHENTIFICATION AGENT
+// ═══════════════════════════════════════════════════
+
+function goPassword(agentId) {
+  const a = getAgent(agentId);
+  currentAgent = agentId;
+  const initials = (a.prenom[0]+a.nom[0]).toUpperCase();
+  document.getElementById('pw-avatar').textContent = initials;
+  document.getElementById('pw-name').textContent = `${a.prenom} ${a.nom}`;
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').style.display = 'none';
+  showPage('page-password');
+  setTimeout(()=>document.getElementById('pw-input').focus(),200);
+}
+
+function checkPassword() {
+  const a = getAgent(currentAgent);
+  const val = document.getElementById('pw-input').value;
+  if (val === a.password) {
+    document.getElementById('pw-error').style.display = 'none';
+    loadAgentPage(a);
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function logout() {
+  currentAgent = null;
+  document.getElementById('btn-logout').style.display = 'none';
+  renderAccueil();
+  showPage('page-accueil');
+}
+
+// ═══════════════════════════════════════════════════
+//  PAGE AGENT
+// ═══════════════════════════════════════════════════
+
+function loadAgentPage(a) {
+  document.getElementById('btn-logout').style.display = 'block';
+  document.getElementById('agent-name').textContent = `${a.prenom} ${a.nom}`;
+
+  // préremplir formulaires
+  document.getElementById('alim-nom').value = `${a.prenom} ${a.nom}`;
+  document.getElementById('alim-agent-hidden').value = `${a.prenom} ${a.nom}`;
+  document.getElementById('util-nom').value = `${a.prenom} ${a.nom}`;
+  document.getElementById('util-agent-hidden').value = `${a.prenom} ${a.nom}`;
+
+  const solde = getSolde(a);
+  document.getElementById('util-solde-info').textContent = `${solde} jour${solde>1?'s':''}`;
+
+  // solde hero
+  const totalE = a.entrees.reduce((s,x)=>s+x.jours,0);
+  const totalS = (a.sorties||[]).reduce((s,x)=>s+x.jours,0);
+  document.getElementById('agent-solde').textContent = solde;
+  document.getElementById('agent-meta').innerHTML =
+    `Date d'ouverture<br><strong>${a.ouverture}</strong><br><br>Total entrées<br><strong>${totalE} j</strong><br><br>Total sorties<br><strong>${totalS} j</strong>`;
+
+  // info cards
+  const abond = a.entrees.filter(e=>e.type.toLowerCase().includes('abondement')).reduce((s,x)=>s+x.jours,0);
+  const types = [...new Set(a.entrees.filter(e=>!e.type.toLowerCase().includes('abondement')).map(e=>e.type))].length;
+  document.getElementById('agent-cards').innerHTML = `
+    <div class="ic"><div class="icl">Jours épargnés</div><div class="icv">${totalE}</div><div class="ics">total entrées</div></div>
+    <div class="ic"><div class="icl">Jours utilisés</div><div class="icv">${totalS}</div><div class="ics">total sorties</div></div>
+    <div class="ic gold"><div class="icl">Abondement</div><div class="icv">${abond}</div><div class="ics">jours offerts employeur</div></div>`;
+
+  // table entrées
+  const tc = document.getElementById('agent-table-container');
+  if(a.entrees.length===0){
+    tc.innerHTML='<div class="empty">Aucune entrée enregistrée.</div>';
+  } else {
+    const totalJ = a.entrees.reduce((s,x)=>s+x.jours,0);
+    tc.innerHTML=`<table class="data-table">
+      <thead><tr><th>Date</th><th>Type</th><th style="text-align:right">Jours</th></tr></thead>
+      <tbody>
+      ${a.entrees.map(e=>`<tr><td><span class="date-mono">${e.date}</span></td>
+        <td><span class="badge ${badgeClass(e.type)}">${e.type}</span></td>
+        <td class="num">+${e.jours}</td></tr>`).join('')}
+      <tr class="tr-total"><td colspan="2">Total</td><td class="num">${totalJ}</td></tr>
+      </tbody></table>`;
+  }
+
+  // footer
+  document.getElementById('agent-footer').innerHTML =
+    `<strong>Responsable RH :</strong> Sandrine PLAS &nbsp;·&nbsp; Date d'ouverture : ${a.ouverture} &nbsp;·&nbsp; Mise à jour : avril 2026`;
+
+  // reset tabs
+  showAgentTab('tab-solde', document.querySelector('#page-agent .nav-tab'));
+  document.querySelectorAll('#page-agent .nav-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+
+  // reset form alerts
+  ['form-alim-success','form-alim-error','form-util-success','form-util-error'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('form-alimentation').reset();
+  document.getElementById('alim-nom').value=`${a.prenom} ${a.nom}`;
+  document.getElementById('form-utilisation').reset();
+  document.getElementById('util-nom').value=`${a.prenom} ${a.nom}`;
+
+  showPage('page-agent');
+}
+
+// ═══════════════════════════════════════════════════
+//  FORMULAIRES
+// ═══════════════════════════════════════════════════
+
+async function submitAlimentation(e) {
+  e.preventDefault();
+  const form = document.getElementById('form-alimentation');
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+  try {
+    const res = await fetch(FORMSPREE_URL, {
+      method:'POST',
+      body: new FormData(form),
+      headers:{Accept:'application/json'}
+    });
+    if(res.ok){
+      document.getElementById('form-alim-success').style.display='block';
+      document.getElementById('form-alim-error').style.display='none';
+      saveHistorique('alimentation', form);
+      form.reset();
+      document.getElementById('alim-nom').value = getAgent(currentAgent) ? `${getAgent(currentAgent).prenom} ${getAgent(currentAgent).nom}` : '';
+    } else {
+      document.getElementById('form-alim-error').style.display='block';
+    }
+  } catch(_){
+    document.getElementById('form-alim-error').style.display='block';
+  }
+  btn.disabled=false; btn.textContent='Envoyer la demande →';
+}
+
+async function submitUtilisation(e) {
+  e.preventDefault();
+  const form = document.getElementById('form-utilisation');
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+  try {
+    const res = await fetch(FORMSPREE_URL, {
+      method:'POST',
+      body: new FormData(form),
+      headers:{Accept:'application/json'}
+    });
+    if(res.ok){
+      document.getElementById('form-util-success').style.display='block';
+      document.getElementById('form-util-error').style.display='none';
+      saveHistorique('utilisation', form);
+      form.reset();
+      document.getElementById('util-nom').value = getAgent(currentAgent) ? `${getAgent(currentAgent).prenom} ${getAgent(currentAgent).nom}` : '';
+    } else {
+      document.getElementById('form-util-error').style.display='block';
+    }
+  } catch(_){
+    document.getElementById('form-util-error').style.display='block';
+  }
+  btn.disabled=false; btn.textContent='Envoyer la demande →';
+}
+
+// ═══════════════════════════════════════════════════
+//  HISTORIQUE LOCAL
+// ═══════════════════════════════════════════════════
+
+function saveHistorique(type, form) {
+  const key = `cet_hist_${currentAgent}`;
+  const hist = JSON.parse(localStorage.getItem(key)||'[]');
+  const fd = new FormData(form);
+  const obj = {type, date: new Date().toLocaleDateString('fr-FR'), data:{}};
+  for(const [k,v] of fd.entries()) obj.data[k]=v;
+  hist.unshift(obj);
+  localStorage.setItem(key, JSON.stringify(hist));
+}
+
+function renderHistorique() {
+  const key = `cet_hist_${currentAgent}`;
+  const hist = JSON.parse(localStorage.getItem(key)||'[]');
+  const c = document.getElementById('historique-container');
+  if(hist.length===0){
+    c.innerHTML='<div class="empty">Aucune demande envoyée depuis cet appareil.</div>';
+    return;
+  }
+  c.innerHTML = hist.map(h=>`
+    <div style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span class="badge ${h.type==='alimentation'?'b-cp5':'b-sortie'}">${h.type==='alimentation'?'Alimentation':'Utilisation'}</span>
+        <span style="font-size:12px;color:var(--muted);">Envoyée le ${h.date}</span>
+        <span class="status-pill s-pending" style="margin-left:auto;">En attente</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);">
+        ${h.type==='alimentation'
+          ? `Année ${h.data.annee||'—'}`
+          : `Du ${h.data.date_debut||'—'} au ${h.data.date_fin||'—'} — ${h.data.nb_jours||'?'} jour(s)`}
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  ADMIN
+// ═══════════════════════════════════════════════════
+
+function goAdminLogin() { showPage('page-admin-login'); }
+
+function checkAdminPassword() {
+  if(document.getElementById('admin-pw-input').value === ADMIN_PASSWORD) {
+    document.getElementById('admin-pw-error').style.display='none';
+    document.getElementById('admin-pw-input').value='';
+    adminMode = true;
+    document.getElementById('btn-logout').style.display='none';
+    renderAdminAgents();
+    showAdminTab('tab-admin-agents', document.querySelector('#page-admin .nav-tab'));
+    showPage('page-admin');
+  } else {
+    document.getElementById('admin-pw-error').style.display='block';
+    document.getElementById('admin-pw-input').value='';
+  }
+}
+
+function logoutAdmin() {
+  adminMode = false;
+  renderAccueil();
+  showPage('page-accueil');
+}
+
+function renderAdminAgents() {
+  const list = document.getElementById('admin-agents-list');
+  list.innerHTML = DATA.agents.map(a=>{
+    const solde = getSolde(a);
+    const initials=(a.prenom[0]+a.nom[0]).toUpperCase();
+    return `<div class="admin-agent-row">
+      <div class="av-sm">${initials}</div>
+      <div class="ainfo">
+        <strong>${a.prenom} ${a.nom}</strong>
+        <small>Ouverture : ${a.ouverture} &nbsp;·&nbsp; Solde : <strong>${solde} j</strong> &nbsp;·&nbsp; Mot de passe : <code>${a.password}</code></small>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="openEditAgent('${a.id}')">Modifier</button>
+    </div>`;
+  }).join('');
+}
+
+function openEditAgent(id) {
+  const a = getAgent(id);
+  document.getElementById('edit-agent-id').value = id;
+  document.getElementById('edit-prenom').value = a.prenom;
+  document.getElementById('edit-nom').value = a.nom;
+  document.getElementById('edit-ouverture').value = a.ouverture;
+  document.getElementById('edit-password').value = a.password;
+  openModal('modal-edit');
+}
+
+function saveEditAgent() {
+  const id = document.getElementById('edit-agent-id').value;
+  const a = getAgent(id);
+  a.prenom = document.getElementById('edit-prenom').value;
+  a.nom = document.getElementById('edit-nom').value;
+  a.ouverture = document.getElementById('edit-ouverture').value;
+  a.password = document.getElementById('edit-password').value;
+  saveData();
+  closeModal('modal-edit');
+  renderAdminAgents();
+  renderAccueil();
+}
+
+function deleteAgent() {
+  const id = document.getElementById('edit-agent-id').value;
+  if(!confirm('Supprimer cet agent définitivement ?')) return;
+  DATA.agents = DATA.agents.filter(a=>a.id!==id);
+  saveData();
+  closeModal('modal-edit');
+  renderAdminAgents();
+  renderAccueil();
+}
+
+function addAgent() {
+  const prenom = document.getElementById('new-prenom').value.trim();
+  const nom = document.getElementById('new-nom').value.trim().toUpperCase();
+  const ouverture = document.getElementById('new-ouverture').value.trim();
+  const password = document.getElementById('new-password').value.trim();
+  if(!prenom||!nom||!ouverture||!password){ alert('Tous les champs sont requis.'); return; }
+  const id = nom.replace(/\s+/g,'-');
+  DATA.agents.push({id, prenom, nom, ouverture, password, entrees:[], sorties:[]});
+  saveData();
+  document.getElementById('add-agent-success').style.display='block';
+  document.getElementById('new-prenom').value='';
+  document.getElementById('new-nom').value='';
+  document.getElementById('new-ouverture').value='';
+  document.getElementById('new-password').value='';
+  renderAccueil();
+  setTimeout(()=>document.getElementById('add-agent-success').style.display='none',3000);
+}
+
+function populateEntrySelect() {
+  const sel = document.getElementById('entry-agent');
+  sel.innerHTML = DATA.agents.map(a=>`<option value="${a.id}">${a.prenom} ${a.nom}</option>`).join('');
+}
+
+function addEntry() {
+  const id = document.getElementById('entry-agent').value;
+  const date = document.getElementById('entry-date').value.trim();
+  const type = document.getElementById('entry-type').value;
+  const sens = document.getElementById('entry-sens').value;
+  const jours = parseFloat(document.getElementById('entry-jours').value);
+  if(!date||!jours||isNaN(jours)){ alert('Veuillez remplir tous les champs.'); return; }
+  const a = getAgent(id);
+  const entry = {date, type, jours, sens};
+  if(sens==='entree') a.entrees.push(entry);
+  else { if(!a.sorties) a.sorties=[]; a.sorties.push(entry); }
+  saveData();
+  document.getElementById('entry-success').style.display='block';
+  document.getElementById('entry-jours').value='';
+  document.getElementById('entry-date').value='';
+  setTimeout(()=>document.getElementById('entry-success').style.display='none',3000);
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`CET_donnees_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function importData() {
+  const file = document.getElementById('import-file').files[0];
+  if(!file){ alert('Sélectionnez un fichier JSON.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if(!imported.agents) throw new Error('Format invalide');
+      DATA = imported;
+      saveData();
+      renderAccueil();
+      const r = document.getElementById('import-result');
+      r.className='alert alert-success'; r.style.display='block';
+      r.textContent=`✓ ${DATA.agents.length} agents importés avec succès.`;
+    } catch(err) {
+      const r = document.getElementById('import-result');
+      r.className='alert alert-error'; r.style.display='block';
+      r.textContent='Erreur : fichier JSON invalide.';
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════
+//  UTILITAIRES
+// ═══════════════════════════════════════════════════
+
+function badgeClass(type) {
+  const t = (type||'').toLowerCase();
+  if(t.includes('rtt'))            return 'b-rtt';
+  if(t.includes('5ème')||t.includes('semaine')) return 'b-cp5';
+  if(t.includes('ancienneté'))     return 'b-autre';
+  if(t.includes('fractionnement')) return 'b-frac';
+  if(t.includes('article 38'))     return 'b-art38';
+  if(t.includes('cadre'))          return 'b-cadre';
+  if(t.includes('abondement')||t.includes('employeur')) return 'b-emp';
+  return 'b-autre';
+}
+
+// fermer modal en cliquant dehors
+document.getElementById('modal-edit').addEventListener('click', function(e){
+  if(e.target===this) closeModal('modal-edit');
+});
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+renderAccueil();
+</script>
+</body>
+</html>
