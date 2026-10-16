@@ -26,6 +26,8 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Jost',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
 
+@keyframes spin{to{transform:rotate(360deg);}}
+
 /* scrollbar */
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -241,6 +243,19 @@ textarea{resize:vertical;min-height:80px;}
   <div class="spacer"></div>
   <button class="header-btn" id="btn-logout" style="display:none" onclick="logout()">← Déconnexion</button>
   <button class="header-btn" id="btn-admin-access" onclick="goAdminLogin()" style="display:none">⚙ Administration</button>
+</div>
+
+<!-- ════════════════════ LOADER ════════════════════ -->
+<div id="app-loader" style="display:none;position:fixed;inset:0;background:rgba(244,241,236,.9);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="width:44px;height:44px;border:4px solid var(--accent-pale);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <p style="font-family:'Jost',sans-serif;color:var(--accent);font-size:14px;font-weight:500;">Chargement des données…</p>
+</div>
+
+<!-- ════════════════════ BANDEAU ERREUR API ════════════════════ -->
+<div id="api-error-banner" style="display:none;background:#fff3cd;border-bottom:2px solid #ffc107;padding:10px 24px;align-items:center;gap:10px;font-size:13px;font-family:'Jost',sans-serif;">
+  <span>⚠️</span>
+  <span>Connexion à la base de données impossible — affichage des données de secours. Les modifications ne seront pas sauvegardées.</span>
+  <button onclick="this.parentElement.style.display='none'" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;">✕</button>
 </div>
 
 <!-- ════════════════════ PAGE ACCUEIL ════════════════════ -->
@@ -619,6 +634,7 @@ textarea{resize:vertical;min-height:80px;}
 
 const FORMSPREE_URL = "https://formspree.io/f/xreoldgl";
 const ADMIN_PASSWORD = "DirectionCET2025";
+const API_URL = "https://script.google.com/macros/s/AKfycbwgHDJmUOyPWvxveWIXsY9KD4QPvl6vrMCD2ReLvGPaB4lBabar9s5AnVxZ8FWb-S6A/exec";
 
 // ═══════════════════════════════════════════════════
 //  DONNÉES INITIALES
@@ -637,7 +653,7 @@ const DEFAULT_DATA = {
     },
     {
       id:"LACHAUD", prenom:"Céline", nom:"LACHAUD",
-      ouverture:"31/12/2022", password:"lachaud2025",
+      ouverture:"31/12/2022", password:"photoCV",
       entrees:[
         {date:"30/11/2024",type:"Repos article 38",jours:4.29,sens:"entree"}
       ],
@@ -645,7 +661,7 @@ const DEFAULT_DATA = {
     },
     {
       id:"LESPINAS", prenom:"Fabien", nom:"LESPINAS",
-      ouverture:"31/12/2022", password:"lespinas2025",
+      ouverture:"31/12/2022", password:"conteurCV",
       entrees:[
         {date:"31/12/2022",type:"Repos article 38",jours:7.14,sens:"entree"},
         {date:"31/12/2023",type:"5ème semaine CP",jours:5,sens:"entree"},
@@ -660,7 +676,7 @@ const DEFAULT_DATA = {
     },
     {
       id:"LEYMOND", prenom:"Basile", nom:"LEYMOND",
-      ouverture:"31/12/2022", password:"leymond2025",
+      ouverture:"31/12/2022", password:"maestroCV",
       entrees:[
         {date:"15/12/2025",type:"Congés cadre",jours:16,sens:"entree"},
         {date:"15/12/2025",type:"Abondement employeur",jours:1,sens:"entree"}
@@ -672,13 +688,13 @@ const DEFAULT_DATA = {
       ouverture:"31/12/2022", password:"neyret2025",
       entrees:[
         {date:"30/11/2024",type:"5ème semaine CP",jours:4,sens:"entree"},
-        {date:"30/11/2024",type:"Repos article 38",jours:3,sens:"entree"}
+        {date:"30/11/2024",type:"Repos article 38",jours:7,sens:"entree"}
       ],
       sorties:[]
     },
     {
       id:"PLAS", prenom:"Sandrine", nom:"PLAS",
-      ouverture:"31/12/2022", password:"plas2025",
+      ouverture:"31/12/2022", password:"pilote",
       entrees:[
         {date:"30/11/2024",type:"RTT",jours:10,sens:"entree"},
         {date:"12/03/2025",type:"Jours de fractionnement",jours:0.5,sens:"entree"},
@@ -700,21 +716,116 @@ const DEFAULT_DATA = {
 //  STATE
 // ═══════════════════════════════════════════════════
 
-let DATA = loadData();
+let DATA = {agents:[]};
 let currentAgent = null;
 let adminMode = false;
+let apiLoaded = false;
 
-function loadData() {
+// ─── Google Sheets API ───────────────────────────────
+async function apiGet() {
+  const res = await fetch(API_URL + '?action=getData');
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return await res.json();
+}
+
+async function apiPost(payload) {
+  const res = await fetch(API_URL, {
+    method:'POST',
+    body: JSON.stringify(payload),
+    headers:{'Content-Type':'application/json'}
+  });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return await res.json();
+}
+
+// Formate une date ISO ou texte en JJ/MM/AAAA
+function formatDate(val) {
+  if(!val) return '';
+  // Si c'est déjà au format JJ/MM/AAAA, on garde
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(val)) return val;
+  // Si c'est un ISO (2022-12-31T... ou 2022-12-31)
+  const d = new Date(val);
+  if(!isNaN(d.getTime())) {
+    // Utiliser UTC pour éviter le décalage horaire
+    const day   = String(d.getUTCDate()).padStart(2,'0');
+    const month = String(d.getUTCMonth()+1).padStart(2,'0');
+    const year  = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  return val;
+}
+
+// Construit la liste agents depuis la réponse API
+// L'API renvoie soit {agents:[...avec entrees/sorties intégrées]}
+// soit {agents:[...], entrees:[...], sorties:[...]} (ancienne structure)
+function buildAgentsFromApi(raw) {
+  // Nouveau format : entrees/sorties déjà dans chaque agent
+  if(raw.agents && raw.agents[0] && Array.isArray(raw.agents[0].entrees)) {
+    return raw.agents.map(a => ({
+      id: a.id,
+      prenom: a.prenom,
+      nom: a.nom,
+      ouverture: formatDate(a.ouverture),
+      password: a.password,
+      entrees: (a.entrees||[]).map(e => ({
+        date: formatDate(e.date), type: e.type, jours: parseFloat(e.jours)||0, sens:'entree'
+      })),
+      sorties: (a.sorties||[]).map(s => ({
+        date: formatDate(s.date), type: s.type, jours: parseFloat(s.jours)||0, sens:'sortie'
+      }))
+    }));
+  }
+  // Ancien format : 3 tableaux séparés
+  const agentMap = {};
+  (raw.agents||[]).forEach(a => {
+    agentMap[a.id] = {
+      id: a.id, prenom: a.prenom, nom: a.nom,
+      ouverture: formatDate(a.ouverture), password: a.password,
+      entrees: [], sorties: []
+    };
+  });
+  (raw.entrees||[]).forEach(e => {
+    if(agentMap[e.agent_id]) agentMap[e.agent_id].entrees.push({
+      date: formatDate(e.date), type: e.type, jours: parseFloat(e.jours)||0, sens:'entree'
+    });
+  });
+  (raw.sorties||[]).forEach(s => {
+    if(agentMap[s.agent_id]) agentMap[s.agent_id].sorties.push({
+      date: formatDate(s.date), type: s.type, jours: parseFloat(s.jours)||0, sens:'sortie'
+    });
+  });
+  return Object.values(agentMap);
+}
+
+async function loadData() {
+  showLoader(true);
   try {
-    const stored = localStorage.getItem('cet_data');
-    if (stored) return JSON.parse(stored);
-  } catch(e){}
-  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    const raw = await apiGet();
+    DATA.agents = buildAgentsFromApi(raw);
+    apiLoaded = true;
+  } catch(e) {
+    console.warn('API indisponible, chargement local:', e);
+    // Fallback sur données par défaut si API inaccessible
+    DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    showApiError();
+  }
+  showLoader(false);
+  renderAccueil();
 }
 
-function saveData() {
-  localStorage.setItem('cet_data', JSON.stringify(DATA));
+function showLoader(show) {
+  let el = document.getElementById('app-loader');
+  if(!el) return;
+  el.style.display = show ? 'flex' : 'none';
 }
+
+function showApiError() {
+  const el = document.getElementById('api-error-banner');
+  if(el) el.style.display = 'flex';
+}
+
+// saveData est conservé pour compatibilité mais ne fait rien (tout va via API)
+function saveData() {}
 
 function getAgent(id) {
   return DATA.agents.find(a => a.id === id);
@@ -1026,45 +1137,64 @@ function openEditAgent(id) {
   openModal('modal-edit');
 }
 
-function saveEditAgent() {
+async function saveEditAgent() {
   const id = document.getElementById('edit-agent-id').value;
   const a = getAgent(id);
-  a.prenom = document.getElementById('edit-prenom').value;
-  a.nom = document.getElementById('edit-nom').value;
-  a.ouverture = document.getElementById('edit-ouverture').value;
-  a.password = document.getElementById('edit-password').value;
-  saveData();
-  closeModal('modal-edit');
-  renderAdminAgents();
-  renderAccueil();
+  const prenom = document.getElementById('edit-prenom').value;
+  const nom = document.getElementById('edit-nom').value;
+  const ouverture = document.getElementById('edit-ouverture').value;
+  const password = document.getElementById('edit-password').value;
+  const btn = document.querySelector('#modal-edit .btn-primary');
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  try {
+    await apiPost({action:'saveAgent', id, prenom, nom, ouverture, password});
+    a.prenom=prenom; a.nom=nom; a.ouverture=ouverture; a.password=password;
+    closeModal('modal-edit');
+    renderAdminAgents();
+    renderAccueil();
+  } catch(e) {
+    alert('Erreur lors de l\'enregistrement. Vérifiez la connexion.');
+  }
+  btn.disabled=false; btn.textContent='Enregistrer';
 }
 
-function deleteAgent() {
+async function deleteAgent() {
   const id = document.getElementById('edit-agent-id').value;
   if(!confirm('Supprimer cet agent définitivement ?')) return;
-  DATA.agents = DATA.agents.filter(a=>a.id!==id);
-  saveData();
-  closeModal('modal-edit');
-  renderAdminAgents();
-  renderAccueil();
+  try {
+    await apiPost({action:'deleteAgent', id});
+    DATA.agents = DATA.agents.filter(a=>a.id!==id);
+    closeModal('modal-edit');
+    renderAdminAgents();
+    renderAccueil();
+  } catch(e) {
+    alert('Erreur lors de la suppression. Vérifiez la connexion.');
+  }
 }
 
-function addAgent() {
+async function addAgent() {
   const prenom = document.getElementById('new-prenom').value.trim();
   const nom = document.getElementById('new-nom').value.trim().toUpperCase();
   const ouverture = document.getElementById('new-ouverture').value.trim();
   const password = document.getElementById('new-password').value.trim();
   if(!prenom||!nom||!ouverture||!password){ alert('Tous les champs sont requis.'); return; }
-  const id = nom.replace(/\s+/g,'-');
-  DATA.agents.push({id, prenom, nom, ouverture, password, entrees:[], sorties:[]});
-  saveData();
-  document.getElementById('add-agent-success').style.display='block';
-  document.getElementById('new-prenom').value='';
-  document.getElementById('new-nom').value='';
-  document.getElementById('new-ouverture').value='';
-  document.getElementById('new-password').value='';
-  renderAccueil();
-  setTimeout(()=>document.getElementById('add-agent-success').style.display='none',3000);
+  const id = nom.replace(/[\s']/g,'-');
+  const btn = document.querySelector('#tab-admin-add .btn-primary');
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  try {
+    await apiPost({action:'saveAgent', id, prenom, nom, ouverture, password});
+    DATA.agents.push({id, prenom, nom, ouverture, password, entrees:[], sorties:[]});
+    document.getElementById('add-agent-success').style.display='block';
+    document.getElementById('new-prenom').value='';
+    document.getElementById('new-nom').value='';
+    document.getElementById('new-ouverture').value='';
+    document.getElementById('new-password').value='';
+    renderAccueil();
+    setTimeout(()=>document.getElementById('add-agent-success').style.display='none',3000);
+  } catch(e) {
+    alert('Erreur lors de l\'ajout. Vérifiez la connexion.');
+  }
+  btn.disabled=false; btn.textContent='Ajouter l\'agent →';
 }
 
 function populateEntrySelect() {
@@ -1072,22 +1202,30 @@ function populateEntrySelect() {
   sel.innerHTML = DATA.agents.map(a=>`<option value="${a.id}">${a.prenom} ${a.nom}</option>`).join('');
 }
 
-function addEntry() {
+async function addEntry() {
   const id = document.getElementById('entry-agent').value;
   const date = document.getElementById('entry-date').value.trim();
   const type = document.getElementById('entry-type').value;
   const sens = document.getElementById('entry-sens').value;
   const jours = parseFloat(document.getElementById('entry-jours').value);
   if(!date||!jours||isNaN(jours)){ alert('Veuillez remplir tous les champs.'); return; }
-  const a = getAgent(id);
-  const entry = {date, type, jours, sens};
-  if(sens==='entree') a.entrees.push(entry);
-  else { if(!a.sorties) a.sorties=[]; a.sorties.push(entry); }
-  saveData();
-  document.getElementById('entry-success').style.display='block';
-  document.getElementById('entry-jours').value='';
-  document.getElementById('entry-date').value='';
-  setTimeout(()=>document.getElementById('entry-success').style.display='none',3000);
+  const btn = document.querySelector('#tab-admin-entry .btn-primary');
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  try {
+    const action = sens==='entree' ? 'addEntry' : 'addSortie';
+    await apiPost({action, agent_id: id, date, type, jours});
+    const a = getAgent(id);
+    const entry = {date, type, jours, sens};
+    if(sens==='entree') a.entrees.push(entry);
+    else { if(!a.sorties) a.sorties=[]; a.sorties.push(entry); }
+    document.getElementById('entry-success').style.display='block';
+    document.getElementById('entry-jours').value='';
+    document.getElementById('entry-date').value='';
+    setTimeout(()=>document.getElementById('entry-success').style.display='none',3000);
+  } catch(e) {
+    alert('Erreur lors de l\'enregistrement. Vérifiez la connexion.');
+  }
+  btn.disabled=false; btn.textContent='Ajouter l\'entrée →';
 }
 
 function exportData() {
@@ -1145,7 +1283,7 @@ document.getElementById('modal-edit').addEventListener('click', function(e){
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
-renderAccueil();
+loadData();
 </script>
 </body>
 </html>
